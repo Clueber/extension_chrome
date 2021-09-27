@@ -1,0 +1,11 @@
+{
+    "name": "Test",
+    "description": "Description de mon super test",
+    "version": "1.2",
+    "manifest_version": 2,
+    "browser_action": {
+      "default_popup": "popup.html",
+      "default_icon": "icon.png"
+    },
+    "permissions": ["storage", "activeTab", "tabs"]
+  }
