@@ -1,11 +1,16 @@
 {
-    "name": "Test",
+    "name": "Clueber",
     "description": "Description de mon super test",
     "version": "1.2",
     "manifest_version": 2,
     "browser_action": {
       "default_popup": "popup.html",
-      "default_icon": "icon.png"
+      "default_icon": "image/icon.png",
+      "icons": {
+        "16": "image/icon16.png",
+        "32": "image/icon32.png",
+        "38": "image/icon38.png"
+      }
     },
     "permissions": ["storage", "activeTab", "tabs"]
   }
