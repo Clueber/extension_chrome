@@ -1,0 +1,2 @@
+let overlay = null;
+
