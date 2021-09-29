@@ -3,16 +3,27 @@
     "description": "Description de mon super test",
     "version": "1.2",
     "manifest_version": 2,
-    "permissions": ["alarms", "storage", "activeTab", "tabs"],
+    "permissions": ["alarms", "storage", "activeTab", "tabs", "notifications", "unlimitedStorage",  "activeTab", "contextMenus", "http://*/*","https://*/*"],
     "browser_action": {
-      "default_popup": "popup.html",
+      "default_popup": "popup-wrapper.html",
       "default_icon": "images/icon.png"
-    }
-    // "web_accessible_resources": [
-    //   "popup.html"
-    // ],
-    // "icon": {
-    //   "16": "/images/icon16.png",
-    //   "32": "/images/icon32.png"
-    // }
+    },
+    "background" : {
+      "scripts" : ["./background.js"],
+      "persistent": true
+    },
+    "content_scripts": [
+      {
+        "matches": ["http://*/*", "https://*/*"],
+        "js": ["content.js"],
+        "css" : ["./stylesheets/content.css"]
+      }
+      
+    ],
+    "web_accessible_resources": [
+      "popup.html",
+      "template/notifGood.html",
+      "template/notifWarning.html",
+      "template/notifCritical.html"
+    ]
   }

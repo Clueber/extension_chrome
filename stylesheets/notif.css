@@ -1,0 +1,30 @@
+.notifContainer {
+    display: flex;
+    align-items: center;
+    margin: 5px;
+}
+.notifContainer p {
+    margin: 0;
+    padding: 0;
+}
+.notifMessage {
+    margin-left: 10px !important;
+    font-size: 14px;
+    font-weight: 600;
+}
+.stateLine {
+    margin-left: 2px;
+    width: 5px;
+    height: 40px;
+    border-radius: 99px;
+    
+}
+.stateLineWarning {
+    background-color: orange;
+}
+.stateLineGood {
+    background-color: green;
+}
+.stateLineCritical {
+    background-color: red;
+}

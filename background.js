@@ -1,5 +1,5 @@
 chrome.alarms.create('testAlarm', {
-	periodInMinutes: 1
+	periodInMinutes: 30
 });
 chrome.notifications.create('test', {
   type: 'basic',

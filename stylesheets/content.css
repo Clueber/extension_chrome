@@ -16,10 +16,24 @@
     top: 0;
     right: 105px;
     width: 400px;
-    height: 630px; /* height auto not working */
+    height: 330px; /* height auto not working */
     margin: 0;
     padding: 0;
     background-color: white;
     border-radius: 16px;
-    box-shadow: 0 1px 1px rgb(0 0 0 / 15%), 0 2px 2px rgb(0 0 0 / 15%), 0 4px 4px rgb(0 0 0 / 15%), 0 8px 8px rgb(0 0 0 / 15%);
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    /* box-shadow: 0 1px 1px rgb(0 0 0 / 15%), 0 2px 2px rgb(0 0 0 / 15%), 0 4px 4px rgb(0 0 0 / 15%), 0 8px 8px rgb(0 0 0 / 15%); */
+}
+
+.notif {
+    z-index: 9999;
+    position: fixed;
+    top: 10px;
+    right: 20px;
+    background-color: white;
+    width: 400px;
+    height: 50px;
+    border: none;
+    border-radius: 3px;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
