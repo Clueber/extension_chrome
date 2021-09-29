@@ -3,14 +3,16 @@
     "description": "Description de mon super test",
     "version": "1.2",
     "manifest_version": 2,
+    "permissions": ["storage", "activeTab", "tabs"],
     "browser_action": {
       "default_popup": "popup.html",
-      "default_icon": "image/icon.png",
-      "icons": {
-        "16": "image/icon16.png",
-        "32": "image/icon32.png",
-        "38": "image/icon38.png"
-      }
-    },
-    "permissions": ["storage", "activeTab", "tabs"]
+      "default_icon": "images/icon.png"
+    }
+    // "web_accessible_resources": [
+    //   "popup.html"
+    // ],
+    // "icon": {
+    //   "16": "/images/icon16.png",
+    //   "32": "/images/icon32.png"
+    // }
   }
