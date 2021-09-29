@@ -32,7 +32,7 @@ body {
     flex-direction: column;
     justify-content: space-between;
     width: 400px;
-    height: 260px;
+    height: 330px;
     padding: 24px 24px 16px;
     border: none;
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
@@ -40,16 +40,25 @@ body {
 
 .cb-header {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+    align-items: flex-end;
+    justify-content: flex-end;
+    height: 100px;
     margin-bottom: 24px;
+    margin-right: 10%;
 }
 
-.cb-header {
-    font-size: 24px;
+.cb-header-title{
+    font-size: 42px;
     color: var(--headerColor);
-    font-weight: 900;
+}
+
+#logo {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    width: 150px;
+    height: 150px;
+    transform: rotate(320deg);
 }
 
 .row {
@@ -59,8 +68,8 @@ body {
 }
 
 .cb-description {
-    font-size: 16px;
-    font-weight: 600;
+    font-size: 17px;
+    font-weight: 500;
 }
 
 .cb-switch {
