@@ -51,7 +51,7 @@ function hidePopup() {
 let tipsInterval = setInterval(async () => {
     if (isValidChromeRuntime()) {
         if (document.getElementsByClassName('notif').length !== 0) {
-            const notifDom = document.getElementsByClassName('notif')[0];
+            const notifDom = document.getElementsByClassName('notif');
             document.body.removeChild(notifDom);
         }
         
@@ -63,12 +63,18 @@ let tipsInterval = setInterval(async () => {
         document.body.appendChild(notif);
         notif = null;
 
-        clearInterval(tipsInterval);
+        //clearInterval(tipsInterval);
+        await new Promise(resolve => setTimeout(resolve, 4000));
+
+        let delNotif = document.querySelector('.notif');
+        document.body.removeChild(delNotif);
 
     } else {
         return;
     }
-}, 5000);
+}, 10000);
+    
+
 
 // It turns out that getManifest() returns undefined when the runtime has been
 // reload through chrome.runtime.reload() or after an update.
@@ -80,4 +86,4 @@ function isValidChromeRuntime() {
     return chrome.runtime && !!chrome.runtime.getManifest();
 }
 
-//showPopup()
+
