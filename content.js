@@ -48,6 +48,30 @@ function hidePopup() {
     frame = null;
 }
 
+let url = "https://clueber.romain-bonnes.fr/api/tips";
+
+
+// function getApi() {
+//     let json;
+//     let message; 
+
+//     const xhttp = new XMLHttpRequest();
+    
+//     xhttp.onreadystatechange = function () {
+//         if(xhttp.readyState === 4 && xhttp.status === 200) {
+
+//             json = JSON.parse(xhttp.responseText);
+//             message = json[Math.floor(Math.random() * json.length)];
+    
+//         }
+//     };
+//     xhttp.open('GET', url, true);
+//     xhttp.send();
+// }
+
+// getApi(); 
+
+
 let tipsInterval = setInterval(async () => {
     if (isValidChromeRuntime()) {
         if (document.getElementsByClassName('notif').length !== 0) {
@@ -55,16 +79,47 @@ let tipsInterval = setInterval(async () => {
             document.body.removeChild(notifDom);
         }
         
+        
         notif = document.createElement('object');
         notif.className = "notif";
         notif.setAttribute("scrolling", "no");
         notif.setAttribute("frameborder", "0");
-        notif.data = chrome.runtime.getURL("./template/notifWarning.html");
+        console.log(notif);
+
+        let json,
+            message; 
+
+        const xhttp = new XMLHttpRequest();
+        xhttp.open('GET', url, false);
+
+        xhttp.onreadystatechange = function () {
+            if(xhttp.readyState === 4 && xhttp.status === 200) {
+
+                json = JSON.parse(xhttp.responseText);
+                message = json[Math.floor(Math.random() * json.length)];
+                console.log(json);
+                console.log(message.risque);
+
+                console.log(notif);
+                if(message.risque == 1) {
+                    notif.data = chrome.runtime.getURL("./template/notifGood.html")
+                } else if(message.risque == 2) {
+                    notif.data = chrome.runtime.getURL("./template/notifWarning.html")
+                } else {
+                    notif.data = chrome.runtime.getURL("./template/notifCritical.html")
+                }
+                
+            }
+        };
+        
+        xhttp.send();
+
         document.body.appendChild(notif);
-        notif = null;
+        //notif = null;
 
         //clearInterval(tipsInterval);
         await new Promise(resolve => setTimeout(resolve, 4000));
+        notif = null;
 
         let delNotif = document.querySelector('.notif');
         document.body.removeChild(delNotif);

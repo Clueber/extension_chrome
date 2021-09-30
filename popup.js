@@ -1,16 +1,32 @@
 let stopNotif = null,
     activateNotif = 0;
 
+// In-page cache of the user's options
+const isChecked = {};
+
 stopNotif = document.querySelector('#stop-notif')
 
+// Initialize the form with the user's option settings
+// chrome.storage.local.get('isChecked', (data) => {
+//     console.log(data);
+//     Object.assign(isChecked, data.isChecked);
+//     stopNotif.checked = Boolean(isChecked.stopNotif);
+
+//     console.log("On est ici  " + isChecked.stopNotif);
+// });
+
 stopNotif.addEventListener('change', (e) => {
-    const isChecked = e.target.checked
+    isChecked.stopNotif = e.target.checked;
     if (isChecked) {
         e.target.parentNode.parentNode.classList.add('active');
-        activateNotif = 0;
+        chrome.storage.local.set(isChecked);
+        //activateNotif = 0;
     } else {
         e.target.parentNode.parentNode.classList.remove('active');
-        activateNotif = 1;
+        chrome.storage.local.set(isChecked);
+        //activateNotif = 1;
     }
-    console.log('Activate Notif : ' + activateNotif)
+    chrome.storage.local.get(['isChecked'], (result) => {
+        console.log('Value currently is ' + isChecked.stopNotif);
+    });  
 })
