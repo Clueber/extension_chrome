@@ -1,5 +1,5 @@
 # Extension_chrome CLUEBER
-![Mr. Clueber](images\green.png). 
+
 ## Pour installer l'extension : 
 
 * Cloner le repository dans un dossier local. 
