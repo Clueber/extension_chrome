@@ -14,7 +14,7 @@ chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
             });
 
             chrome.tabs.insertCSS(tabs[0].id, {
-                file: 'stylesheets/content.css'
+                file: 'stylesheets/contentClueber.css'
             });
 
         }

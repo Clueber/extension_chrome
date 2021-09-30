@@ -1,6 +1,9 @@
 var overlay = null,
     frame = null,
-    notif = null;
+    notif = null,
+    scan = null;
+
+const regex = /(<!DOCTYPE.*<body>)/s;
 
 window.__CLUEBER_LOADED = true
 
@@ -22,7 +25,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true;
 });
 
-function showPopup() {
+async function showPopup(json) {
     if (document.querySelector(".py-popup-overlay")) {
         hidePopup();
         return false;
@@ -36,8 +39,42 @@ function showPopup() {
     frame.setAttribute("scrolling", "no");
     frame.setAttribute("frameborder", "0");
 
+
     // file need to be added in manifest web_accessible_resources
-    frame.data = chrome.runtime.getURL("popup.html");
+    popupTemplate = chrome.runtime.getURL("popup.html");
+    // let cssPath = chrome.runtime.getURL("./stylesheets/popup.css");
+
+    var head = document.getElementsByTagName('HEAD')[0]; 
+    var link = document.createElement('link');
+    link.rel = 'stylesheet'; 
+    link.type = 'text/css';
+    link.href = chrome.runtime.getURL("stylesheets/popupClueber.css");
+    head.appendChild(link); 
+
+    frame.innerHTML = await fetch(popupTemplate)
+    .then(response => response.text())
+    .then((data)=> {
+        let header = regex.exec(data)[0];
+        data = data.replace(header, "");
+        console.log(json[0].percentage);
+        if (json[0].percentage < 0.05) {
+            data = data.replace('{{scanRisque}}', '<p id="scan-risque" style="color:green;" class="scan-risque-good">FAIBLE</p>');
+            data = data.replace('{{imgRisque}}', `<img src="${chrome.runtime.getURL("images/1.png")}" alt="">`);
+        }else if (json[0].percentage > 0.05 || json[0].percentage < 4) {
+            data = data.replace('{{scanRisque}}', '<p id="scan-risque" class="scan-risque-warning">MOYEN</p>');
+            data = data.replace('{{imgRisque}}', `<img src="${chrome.runtime.getURL("images/2.png")}" alt="">`);
+        }else {
+            data = data.replace('{{scanRisque}}', '<p id="scan-risque" class="scan-risque-critical">CRITIQUE</p>');
+            data = data.replace('{{imgRisque}}', `<img src="${chrome.runtime.getURL("images/3.png")}" alt="">`);
+        }
+        data = data.replace('{{harmlessStat}}', json[2].stats.harmless + "%");
+        data = data.replace('{{suspectStat}}', json[2].stats.suspicious + "%");
+        data = data.replace('{{maliciousStat}}', json[2].stats.malicious + "%");
+        data = data.replace('{{undetectedStat}}', json[2].stats.undetected + "%");
+        return data;
+    });
+    
+
     overlay.appendChild(frame);
     document.body.appendChild(overlay);
     overlay.addEventListener("click", hidePopup);
@@ -87,4 +124,33 @@ function isValidChromeRuntime() {
     return chrome.runtime && !!chrome.runtime.getManifest();
 }
 
-//showPopup()
+
+window.onload = async () => {
+    await new Promise(resolve => setTimeout(resolve, ms));
+    let xhttp = new XMLHttpRequest();
+    xhttp.open("POST", "https://clueber.romain-bonnes.fr/api/scan", true);
+    xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhttp.onreadystatechange = function () {
+        if(xhttp.readyState === 4 && xhttp.status === 200) {
+            let json
+            try {
+                json = JSON.parse(xhttp.responseText);
+                showPopup(json);
+            } catch(e) {
+            }
+            
+        }else if(xhttp.readyState === 4 && xhttp.status !== 200) {
+            console.log("Error");
+        }
+    };
+    xhttp.send(`url=${window.location.href}`);
+}
+
+
+
+// scan = document.createElement('object');
+// scan.className = "scan";
+// scan.setAttribute("scrolling", "no");
+// scan.setAttribute("frameborder", "0");
+// scan.data = chrome.runtime.getURL("./template/notifCritical.html");
+// document.body.appendChild(scan);
