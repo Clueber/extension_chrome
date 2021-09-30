@@ -4,13 +4,6 @@ var overlay = null,
 
 window.__CLUEBER_LOADED = true
 
-// Event send by the inner `<object>` script
-window.addEventListener('message', e => {
-    if (e.data && e.data.type === 'find_card') {
-        findCard()
-    }
-})
-
 // Event send by the extension popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.type == "popup") {
@@ -66,7 +59,7 @@ let tipsInterval = setInterval(async () => {
         notif.className = "notif";
         notif.setAttribute("scrolling", "no");
         notif.setAttribute("frameborder", "0");
-        notif.data = chrome.runtime.getURL("./template/notifCritical.html");
+        notif.data = chrome.runtime.getURL("./template/notifWarning.html");
         document.body.appendChild(notif);
         notif = null;
 
