@@ -1,0 +1,90 @@
+.py-popup-overlay {
+    position: fixed;
+    z-index: 9999; /*2147483645;*/
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+}
+
+.py-popup-container {
+    z-index: 99999;
+    /* z-index: 9999; */
+    position: fixed;
+    top: 0;
+    right: 50px;
+    width: 550px;
+    height: 270px; /* height auto not working */
+    margin: 0;
+    padding: 0;
+    background-color: white;
+    border-radius: 16px;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    /* box-shadow: 0 1px 1px rgb(0 0 0 / 15%), 0 2px 2px rgb(0 0 0 / 15%), 0 4px 4px rgb(0 0 0 / 15%), 0 8px 8px rgb(0 0 0 / 15%); */
+}
+.about {
+    position: fixed;
+    z-index: 99999;
+    top: 0;
+    right: 50px;
+    width: 400px;
+    height: 400px; /* height auto not working */
+    margin: 0;
+    padding: 0;
+    background-color: white;
+    border-radius: 16px;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    /* box-shadow: 0 1px 1px rgb(0 0 0 / 15%), 0 2px 2px rgb(0 0 0 / 15%), 0 4px 4px rgb(0 0 0 / 15%), 0 8px 8px rgb(0 0 0 / 15%); */
+}
+
+.notif {
+    z-index: 999;
+    position: fixed;
+    top: 10px;
+    right: 20px;
+    background-color: white;
+    width: 400px;
+    height: 110px;
+    border: none;
+    border-radius: 3px;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    opacity: 1;
+    animation: expand .3s ease-in-out;
+}
+
+@keyframes expand {
+    from {
+        height: 0;
+        opacity: 0;
+    }
+}
+
+.notifContainerRemoved {
+    opacity: 0;
+    height: 0;
+    animation: shrink .3s ease-in-out;
+}
+
+@keyframes shrink {
+    from {
+        height: 100px;
+        opacity: 1;
+    }
+}
+
+/* .scan {
+    z-index: 9999;
+    position: fixed;
+    top: 10px;
+    right: 20px;
+    background-color: white;
+    width: 400px;
+    height: 50px;
+    border: none;
+    border-radius: 3px;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+} */

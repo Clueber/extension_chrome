@@ -16,14 +16,16 @@
       {
         "matches": ["http://*/*", "https://*/*"],
         "js": ["content.js"],
-        "css" : ["./stylesheets/content.css"]
+        "css" : ["./stylesheets/contentClueber.css"]
       }
       
     ],
     "web_accessible_resources": [
+      "images/*",
+      "stylesheets/*",
       "popup.html",
-      "template/notifGood.html",
-      "template/notifWarning.html",
-      "template/notifCritical.html"
+      "popup.js",
+      "about.html",
+      "template/*"
     ]
   }
