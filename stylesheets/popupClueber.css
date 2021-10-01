@@ -225,3 +225,8 @@ input:checked + .slider:before {transform: translateX(16px);}
     /* background-color: black; */
     z-index: 999;
 }
+
+.cb-header h1 {
+    border-bottom: none;
+    margin-bottom: 0;
+}

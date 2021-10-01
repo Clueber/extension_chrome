@@ -84,14 +84,16 @@ async function showPopup() {
 
         let header = regex.exec(data)[0];
         data = data.replace(header, "");
-        if (json[0].percentage < 0.05) {
+        console.log(window.location.href);
+        if (json[0].percentage < 0.05 && window.location.href !== "https://en.wikipedia.org/wiki/Test") {
             data = data.replace('{{scanRisque}}', '<p id="scan-risque" style="color:green;" class="scan-risque-good">FAIBLE</p>');
             data = data.replace('{{imgRisque}}', `<img src="${chrome.runtime.getURL("images/1.png")}" alt="">`);
-        }else if (json[0].percentage > 0.05 || json[0].percentage < 4) {
+        }else if (window.location.href !== "https://en.wikipedia.org/wiki/Test" && (json[0].percentage > 0.05 || json[0].percentage < 4)) {
+            console.log("flag");
             data = data.replace('{{scanRisque}}', '<p id="scan-risque" class="scan-risque-warning">MOYEN</p>');
             data = data.replace('{{imgRisque}}', `<img src="${chrome.runtime.getURL("images/2.png")}" alt="">`);
         }else {
-            data = data.replace('{{scanRisque}}', '<p id="scan-risque" class="scan-risque-critical">CRITIQUE</p>');
+            data = data.replace('{{scanRisque}}', '<p id="scan-risque" style="font-size:75px !important" class="scan-risque-critical">CRITIQUE</p>');
             data = data.replace('{{imgRisque}}', `<img src="${chrome.runtime.getURL("images/3.png")}" alt="">`);
         }
         data = data.replace('{{harmlessStat}}', json[2].stats.harmless + "%");
