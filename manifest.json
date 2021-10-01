@@ -22,10 +22,10 @@
     ],
     "web_accessible_resources": [
       "images/*",
-      "stylesheets/popupClueber.css",
+      "stylesheets/*",
       "popup.html",
-      "template/notifGood.html",
-      "template/notifWarning.html",
-      "template/notifCritical.html"
+      "popup.js",
+      "about.html",
+      "template/*"
     ]
   }

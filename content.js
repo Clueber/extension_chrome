@@ -1,9 +1,15 @@
 var overlay = null,
+    overlayPopup = null,
     frame = null,
     notif = null,
-    scan = null;
+    scan = null,
+    about = null,
+    overlayAbout = null;
+let json = null;
 
-const regex = /(<!DOCTYPE.*<body>)/s;
+const url = "https://clueber.romain-bonnes.fr/api/tips/id/";
+
+const regex = /(<!DOCTYPE.*<\/head>)/s;
 
 window.__CLUEBER_LOADED = true
 
@@ -18,20 +24,46 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true;
 });
 
-async function showPopup(json) {
+function init() {
+    if (json !== null) {
+        showPopup(json);
+        return;
+    }
+    const xhttp = new XMLHttpRequest();
+    xhttp.open("POST", "https://clueber.romain-bonnes.fr/api/scan", true);
+    xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhttp.onreadystatechange = function () {
+        if(xhttp.readyState === 4 && xhttp.status === 200) {
+            try {
+                json = JSON.parse(xhttp.responseText);
+                showPopup();
+            } catch(e) {
+            }
+            
+        }else if(xhttp.readyState === 4 && xhttp.status !== 200) {
+            console.log("Error");
+        }
+    };
+    xhttp.send(`url=${window.location.href}`);
+}
+
+async function showPopup() {
+    //let json = test();
     if (document.querySelector(".py-popup-overlay")) {
         hidePopup();
         return false;
     }
 
     overlay = document.createElement('div');
+    overlayPopup = document.createElement('div');
     frame = document.createElement('object');
 
     overlay.className = "py-popup-overlay";
+    overlayPopup.className = "overlayPopup";
+
     frame.className = "py-popup-container";
     frame.setAttribute("scrolling", "no");
     frame.setAttribute("frameborder", "0");
-
 
     // file need to be added in manifest web_accessible_resources
     popupTemplate = chrome.runtime.getURL("popup.html");
@@ -41,15 +73,17 @@ async function showPopup(json) {
     var link = document.createElement('link');
     link.rel = 'stylesheet'; 
     link.type = 'text/css';
+    link.defer = true;
     link.href = chrome.runtime.getURL("stylesheets/popupClueber.css");
     head.appendChild(link); 
 
     frame.innerHTML = await fetch(popupTemplate)
     .then(response => response.text())
     .then((data)=> {
+        data = data.replace('{{imgMore}}', chrome.runtime.getURL("images/more.png"));
+
         let header = regex.exec(data)[0];
         data = data.replace(header, "");
-        console.log(json[0].percentage);
         if (json[0].percentage < 0.05) {
             data = data.replace('{{scanRisque}}', '<p id="scan-risque" style="color:green;" class="scan-risque-good">FAIBLE</p>');
             data = data.replace('{{imgRisque}}', `<img src="${chrome.runtime.getURL("images/1.png")}" alt="">`);
@@ -66,16 +100,33 @@ async function showPopup(json) {
         data = data.replace('{{undetectedStat}}', json[2].stats.undetected + "%");
         return data;
     });
-    
 
-    overlay.appendChild(frame);
+    overlay.appendChild(overlayPopup);
+    //document.body.appendChild();
+    
+    document.body.appendChild(frame);
     document.body.appendChild(overlay);
-    overlay.addEventListener("click", hidePopup);
+    // document.body.appendChild(overlay);
+    // document.body.appendChild(frame);
+
+    let more = document.querySelector('.imgMore');
+    more.onclick = ()=>{showAbout()};
+
+    // var headPop = document.getElementsByTagName('BODY')[0]; 
+    // var linkPop = document.createElement('script');
+    // linkPop.src = chrome.runtime.getURL("popup.js");
+    // headPop.appendChild(linkPop); 
+
+    // setTimeout(() => {
+    //     hidePopup();
+    // }, 5000);
+    overlayPopup.addEventListener("click", hidePopup);
 }
 
 function hidePopup() {
     // Remove EventListener
-    overlay.removeEventListener("click", hidePopup);
+    overlayPopup.removeEventListener("click", hidePopup);
+    document.querySelector(".py-popup-container").remove();
 
     // Remove the elements:
     document.querySelector(".py-popup-overlay").remove();
@@ -85,88 +136,68 @@ function hidePopup() {
     frame = null;
 }
 
-let url = "https://clueber.romain-bonnes.fr/api/tips";
-
-
-// function getApi() {
-//     let json;
-//     let message; 
-
-//     const xhttp = new XMLHttpRequest();
-    
-//     xhttp.onreadystatechange = function () {
-//         if(xhttp.readyState === 4 && xhttp.status === 200) {
-
-//             json = JSON.parse(xhttp.responseText);
-//             message = json[Math.floor(Math.random() * json.length)];
-    
-//         }
-//     };
-//     xhttp.open('GET', url, true);
-//     xhttp.send();
-// }
-
-// getApi(); 
-
-
 let tipsInterval = setInterval(async () => {
+    if (localStorage.getItem('stopNotif') === "true") {
+        return;
+    }
     if (isValidChromeRuntime()) {
-        if (document.getElementsByClassName('notif').length !== 0) {
-            const notifDom = document.getElementsByClassName('notif');
+        if (document.querySelector('.notif') !== null) {
+            const notifDom = document.querySelector('.notif');
             document.body.removeChild(notifDom);
         }
-        
         
         notif = document.createElement('object');
         notif.className = "notif";
         notif.setAttribute("scrolling", "no");
         notif.setAttribute("frameborder", "0");
-        console.log(notif);
 
-        let json,
-            message; 
+        let json; 
+
+        const messageId = between(1, 13);
 
         const xhttp = new XMLHttpRequest();
-        xhttp.open('GET', url, false);
-
-        xhttp.onreadystatechange = function () {
+        xhttp.open('POST', url + messageId , true);
+        xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhttp.onreadystatechange = async function () {
             if(xhttp.readyState === 4 && xhttp.status === 200) {
-
-                json = JSON.parse(xhttp.responseText);
-                message = json[Math.floor(Math.random() * json.length)];
-                console.log(json);
-                console.log(message.risque);
-
-                console.log(notif);
-                if(message.risque == 1) {
-                    notif.data = chrome.runtime.getURL("./template/notifGood.html")
-                } else if(message.risque == 2) {
-                    notif.data = chrome.runtime.getURL("./template/notifWarning.html")
-                } else {
-                    notif.data = chrome.runtime.getURL("./template/notifCritical.html")
-                }
+                json = JSON.parse(xhttp.responseText)[0];
                 
+                switch (json.risque) {
+                    case 1:
+                        notif.innerHTML = createNotif(chrome.runtime.getURL("./template/notif.html"), notif, "stateLineGood", json.message, "images/green.png");
+                        break;
+                    case 2:
+                        notif.innerHTML = createNotif(chrome.runtime.getURL("./template/notif.html"), notif, "stateLineWarning", json.message, "images/orange.png");
+                        break;
+                    case 3:
+                        notif.innerHTML = createNotif(chrome.runtime.getURL("./template/notif.html"), notif, "stateLineCritical", json.message, "images/rouge.png");
+                        break;
+                
+                    default:
+                        break;
+                }
+
+                document.body.appendChild(notif);
+                let delNotif = document.querySelector('.notif');
+                //clearInterval(tipsInterval);
+                await new Promise(resolve => setTimeout(resolve, 5000));
+
+                let delNotifContainer = document.querySelector('.notifContainer');
+                delNotif.classList.add('notifContainerRemoved');
+                delNotifContainer.classList.add('notifContainerRemoved');
+
+                delNotifContainer.addEventListener('animationend', () => {
+                    document.body.removeChild(delNotif);
+                });
+
+                notif = null;
             }
         };
-        
-        xhttp.send();
-
-        document.body.appendChild(notif);
-        //notif = null;
-
-        //clearInterval(tipsInterval);
-        await new Promise(resolve => setTimeout(resolve, 4000));
-        notif = null;
-
-        let delNotif = document.querySelector('.notif');
-        document.body.removeChild(delNotif);
-
+        xhttp.send("messageRequired=true&risqueRequired=true");
     } else {
         return;
     }
 }, 10000);
-    
-
 
 // It turns out that getManifest() returns undefined when the runtime has been
 // reload through chrome.runtime.reload() or after an update.
@@ -178,24 +209,99 @@ function isValidChromeRuntime() {
     return chrome.runtime && !!chrome.runtime.getManifest();
 }
 
+// window.onload = async () => {
+    //await new Promise(resolve => setTimeout(resolve, ms));
+    
+// }
 
-window.onload = async () => {
-    await new Promise(resolve => setTimeout(resolve, ms));
-    let xhttp = new XMLHttpRequest();
-    xhttp.open("POST", "https://clueber.romain-bonnes.fr/api/scan", true);
-    xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    xhttp.onreadystatechange = function () {
-        if(xhttp.readyState === 4 && xhttp.status === 200) {
-            let json
-            try {
-                json = JSON.parse(xhttp.responseText);
-                showPopup(json);
-            } catch(e) {
-            }
-            
-        }else if(xhttp.readyState === 4 && xhttp.status !== 200) {
-            console.log("Error");
-        }
-    };
-    xhttp.send(`url=${window.location.href}`);
+async function createNotif(template, object, state, message, img) {
+    var head = document.getElementsByTagName('HEAD')[0]; 
+    var link = document.createElement('link');
+    link.rel = 'stylesheet'; 
+    link.type = 'text/css';
+    link.href = chrome.runtime.getURL("stylesheets/notif.css");
+    head.appendChild(link); 
+
+    object.innerHTML = await fetch(template)
+    .then(response => response.text())
+    .then((data)=> {
+        let header = regex.exec(data)[0];
+        data = data.replace(header, "");
+        data = data.replace('{{state}}', state);
+        data = data.replace('{{img}}', chrome.runtime.getURL(img));
+        data = data.replace('{{message}}', message);
+
+        return data;
+    });
 }
+
+/**
+ * Returns a random number between min (inclusive) and max (exclusive)
+ */
+ function between(min, max) {  
+    return Math.floor(
+      Math.random() * (max - min) + min
+    )
+}
+
+async function showAbout() {
+    hidePopup();
+
+    about = document.createElement('object');
+    about.className = "about";
+    about.setAttribute("scrolling", "no");
+    about.setAttribute("frameborder", "0");
+
+    aboutTemplate = chrome.runtime.getURL("about.html");
+   
+    about.innerHTML = await fetch(aboutTemplate)
+    .then(response => response.text())
+    .then((data)=> {
+        // data = data.replace('{{imgMore}}', chrome.runtime.getURL("images/more.png"));
+
+        let header = regex.exec(data)[0];
+        data = data.replace(header, "");
+        data = data.replace('{{icon}}', chrome.runtime.getURL('images/icon.png'));
+        // data = data.replace('{{imgMore}}', chrome.runtime.getURL("images/more.png"));
+        
+        // console.log(json[0].percentage);
+        // if (json[0].percentage < 0.05) {
+        //     data = data.replace('{{imgRisque}}', `<img src="${chrome.runtime.getURL("images/1.png")}" alt="">`);
+        // }else if (json[0].percentage > 0.05 || json[0].percentage < 4) {
+        //     data = data.replace('{{scanRisque}}', '<p id="scan-risque" class="scan-risque-warning">MOYEN</p>');
+        //     data = data.replace('{{imgRisque}}', `<img src="${chrome.runtime.getURL("images/2.png")}" alt="">`);
+        // }else {
+        //     data = data.replace('{{scanRisque}}', '<p id="scan-risque" class="scan-risque-critical">CRITIQUE</p>');
+        //     data = data.replace('{{imgRisque}}', `<img src="${chrome.runtime.getURL("images/3.png")}" alt="">`);
+        // }
+        // data = data.replace('{{harmlessStat}}', json[2].stats.harmless + "%");
+        // data = data.replace('{{suspectStat}}', json[2].stats.suspicious + "%");
+        // data = data.replace('{{maliciousStat}}', json[2].stats.malicious + "%");
+        // data = data.replace('{{undetectedStat}}', json[2].stats.undetected + "%");
+        return data;
+    });
+
+    let overlayAboutContainer = document.createElement('div');
+    overlayAboutContainer.className = "overlayAboutContainer";
+    overlayAbout = document.createElement('div');
+    overlayAbout.className = "overlayAbout";
+    overlayAboutContainer.appendChild(overlayAbout);
+    document.body.appendChild(overlayAboutContainer);
+
+    overlayAbout.addEventListener('click', removeAbout);
+    document.body.appendChild(about);
+
+    var headPop = document.getElementsByTagName('BODY')[0]; 
+    var linkPop = document.createElement('script');
+    linkPop.src = chrome.runtime.getURL("popup.js");
+    headPop.appendChild(linkPop); 
+
+}
+
+function removeAbout() {
+    document.querySelector('.about').remove();
+    overlayAbout.removeEventListener("click", removeAbout);
+    document.querySelector('.overlayAboutContainer').remove();
+}
+
+init();

@@ -3,7 +3,7 @@ chrome.alarms.create('testAlarm', {
 });
 chrome.notifications.create('test', {
   type: 'basic',
-  iconUrl: 'icon.png',
+  iconUrl: 'images/icon.png',
   title: 'Clueber Cyber-Tips',
   message: 'Hourly security tips',
   priority: 2
