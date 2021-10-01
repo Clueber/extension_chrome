@@ -5,7 +5,7 @@ chrome.notifications.create('test', {
   type: 'basic',
   iconUrl: 'images/icon.png',
   title: 'Clueber Cyber-Tips',
-  message: 'Hourly security tips',
+  message: 'Utiliser un mot de passe différent pour chaque compte',
   priority: 2
 });
 chrome.alarms.onAlarm.addListener((alarms) => {
